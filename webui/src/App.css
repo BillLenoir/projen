@@ -54,6 +54,7 @@ table#gameDataTable td {
     border-bottom: 1px solid #999999;
     padding:0.5em 1.0em;
     background-color: #ffffff;
+    vertical-align: top;
 }
 
 table#gameDataTable tr:nth-child(even) td {
@@ -62,7 +63,6 @@ table#gameDataTable tr:nth-child(even) td {
 
 table#gameDataTable td:first-child {
     text-align: right;
-    vertical-align: top;
 }
 
 table#gameDataTable td.noImage {

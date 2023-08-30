@@ -8,7 +8,7 @@ export default function GameItem(props: GameItemProps) {
   let tableRow = [];
 
   const from: number = props.page ? (props.page - 1) * 50 : 0;
-  let to: number = props.page ? props.page * 50 : 50;
+  let to: number = props.page ? props.page * 50 - 1 : 50;
   if (to > games.length) {
     to = games.length - 1;
   }
@@ -45,7 +45,9 @@ export default function GameItem(props: GameItemProps) {
           </h3>
           <p>{gameDescription}</p>
         </td>
-        <td className="people">{gamePublisher}</td>
+        <td className="people">
+          <p>{gamePublisher}</p>
+        </td>
       </tr>,
     );
   }
