@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "webui"
+		},
+		{
+			"path": "graphql"
+		}
+	],
+	"settings": {}
+}

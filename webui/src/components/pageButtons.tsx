@@ -14,39 +14,17 @@ export default function PageButtons(props: PageButtonProps) {
   const currentPage = props.currentPage;
   const maxPage = props.maxPage;
 
-  const toggleDisable = () => {
-    let disableSetting = false;
+  const toggleDisable = (): boolean => {
     if (whichPage === "First") {
-      if (currentPage <= 2) {
-        disableSetting = true;
-      } else {
-        disableSetting = false;
-      }
+      return currentPage <= 2;
     } else if (whichPage === "Prev") {
-      if (currentPage === 1) {
-        disableSetting = true;
-      } else {
-        disableSetting = false;
-      }
+      return currentPage === 1;
     } else if (whichPage === "Next") {
-      if (currentPage === maxPage) {
-        disableSetting = true;
-      } else {
-        disableSetting = false;
-      }
+      return currentPage === maxPage;
     } else if (whichPage === "Last") {
-      if (currentPage >= maxPage - 1) {
-        disableSetting = true;
-      } else {
-        disableSetting = false;
-      }
+      return currentPage >= maxPage - 1;
     } else {
       throw new Error("Which page wasn't properly defined");
-    }
-    if (typeof disableSetting === "boolean") {
-      return disableSetting satisfies boolean;
-    } else {
-      return undefined;
     }
   };
 

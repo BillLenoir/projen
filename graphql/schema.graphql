@@ -1,0 +1,21 @@
+# When this changes
+# run
+# npx graphql-codegen  <=======================
+
+type Query {
+  games(from: Int!, limit: Int!, sort: String!, filter: String!): [Game]
+  game(title: String!): Game
+}
+
+type Game {
+  id: Int!
+  title: String
+  yearpublished: Int
+  thumbnail: String
+  publisher: String
+  description: String
+  gameown: Boolean
+  gamewanttobuy: Boolean
+  gameprevowned: Boolean
+  gamefortrade: Boolean
+}

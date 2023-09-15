@@ -1,9 +1,10 @@
 import "./App.css";
 import { useState } from "react";
-import GameItem from "./components/gameItem";
+// import GameItem from "./components/gameItem";
 import ListHeader from "./components/listHeader";
 import Pagination from "./components/pagination";
 import { games } from "./data/gameData";
+import GamesGraphQL from "./urql";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +39,10 @@ export default function App() {
         maxPage={maxPage}
       />
       <table cellSpacing="0" cellPadding="0" id="gameDataTable">
-        <GameItem page={currentPage} />
+        {
+          // <GameItem page={currentPage} />
+        }
+        <GamesGraphQL page={currentPage} />
       </table>
       <Pagination
         location="bottom"

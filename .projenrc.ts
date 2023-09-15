@@ -14,8 +14,6 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   prettier: true,
 
   // deps: [],                /* Runtime dependencies of this module. */
-  deps: ["@apollo/server", "graphql"],
-
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
@@ -30,6 +28,7 @@ new web.ReactTypeScriptProject({
   prettier: true,
 
   // deps: [],                /* Runtime dependencies of this module. */
+  deps: ["urql", "graphql"],
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   devDeps: [
     "@babel/plugin-proposal-private-property-in-object",
@@ -60,7 +59,11 @@ const graphqlProject = new typescript.TypeScriptAppProject({
   deps: ["@apollo/server", "graphql"],
 
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
-  // devDeps: [],             /* Build dependencies for this module. */
+  devDeps: [
+    "@graphql-codegen/cli",
+    "@graphql-codegen/typescript-resolvers",
+    "@graphql-codegen/typescript",
+  ] /* Build dependencies for this module. */,
   // packageName: undefined,  /* The "name" in package.json. */
 });
 

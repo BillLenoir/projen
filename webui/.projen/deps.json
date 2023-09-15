@@ -97,6 +97,10 @@
       "type": "override"
     },
     {
+      "name": "graphql",
+      "type": "runtime"
+    },
+    {
       "name": "react",
       "type": "runtime"
     },
@@ -107,6 +111,10 @@
     {
       "name": "react-scripts",
       "version": "^5",
+      "type": "runtime"
+    },
+    {
+      "name": "urql",
       "type": "runtime"
     },
     {

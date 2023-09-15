@@ -1,6 +1,18 @@
 {
   "dependencies": [
     {
+      "name": "@graphql-codegen/cli",
+      "type": "build"
+    },
+    {
+      "name": "@graphql-codegen/typescript",
+      "type": "build"
+    },
+    {
+      "name": "@graphql-codegen/typescript-resolvers",
+      "type": "build"
+    },
+    {
       "name": "@types/jest",
       "type": "build"
     },
