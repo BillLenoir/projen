@@ -43,8 +43,8 @@ export type QueryGameArgs = {
 
 
 export type QueryGamesArgs = {
+  cursor: Scalars['String']['input'];
   filter: Scalars['String']['input'];
-  from: Scalars['Int']['input'];
   limit: Scalars['Int']['input'];
   sort: Scalars['String']['input'];
 };
@@ -153,7 +153,7 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   game?: Resolver<Maybe<ResolversTypes['Game']>, ParentType, ContextType, RequireFields<QueryGameArgs, 'title'>>;
-  games?: Resolver<Maybe<Array<Maybe<ResolversTypes['Game']>>>, ParentType, ContextType, RequireFields<QueryGamesArgs, 'filter' | 'from' | 'limit' | 'sort'>>;
+  games?: Resolver<Maybe<Array<Maybe<ResolversTypes['Game']>>>, ParentType, ContextType, RequireFields<QueryGamesArgs, 'cursor' | 'filter' | 'limit' | 'sort'>>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{

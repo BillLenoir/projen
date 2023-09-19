@@ -3,7 +3,14 @@
 # npx graphql-codegen  <=======================
 
 type Query {
-  games(from: Int!, limit: Int!, sort: String!, filter: String!): [Game]
+  # Return a list of games 
+  # sort: How to sort the list of games
+  # filter: How to filter the list of games
+  # cursor: Where to start to start the returned list
+  # limit: The number of games to return in the list
+  games(sort: String!, filter: String!, cursor: String!, limit: Int!): [Game]
+
+  # Return a single game specificed by title
   game(title: String!): Game
 }
 
