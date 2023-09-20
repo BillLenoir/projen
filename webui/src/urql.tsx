@@ -7,12 +7,8 @@ import {
   useQuery,
 } from "urql";
 
-interface GamesGraphQLProps {
-  page: number;
-}
-
 interface GamesProps {
-  from: number;
+  cursor: string;
   limit: number;
   sort: string;
   filter: string;
@@ -23,23 +19,23 @@ const client = new Client({
   exchanges: [cacheExchange, fetchExchange],
 });
 
-export default function GamesGraphQL(props: GamesGraphQLProps) {
+export default function GamesGraphQL() {
   return (
     <Provider value={client}>
-      <Games from={props.page} limit={50} sort="title" filter="want" />
+      <Games cursor="" limit={50} sort="yearpublished" filter="trade" />
     </Provider>
   );
 }
 
 const Games = (props: GamesProps) => {
-  const from = props.from;
+  const cursor = props.cursor;
   const limit = props.limit;
   const sort = props.sort;
   const filter = props.filter;
 
   const GamesQuery = gql`
-    query ($from: Int!, $limit: Int!, $sort: String!, $filter: String!) {
-      games(from: $from, limit: $limit, sort: $sort, filter: $filter) {
+    query ($cursor: String!, $limit: Int!, $sort: String!, $filter: String!) {
+      games(cursor: $cursor, limit: $limit, sort: $sort, filter: $filter) {
         description
         id
         publisher
@@ -56,7 +52,7 @@ const Games = (props: GamesProps) => {
 
   const [result, reexecuteQuery] = useQuery({
     query: GamesQuery,
-    variables: { from, limit, sort, filter },
+    variables: { cursor, limit, sort, filter },
   });
 
   const { data, fetching, error } = result;

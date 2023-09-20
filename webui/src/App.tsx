@@ -39,10 +39,7 @@ export default function App() {
         maxPage={maxPage}
       />
       <table cellSpacing="0" cellPadding="0" id="gameDataTable">
-        {
-          // <GameItem page={currentPage} />
-        }
-        <GamesGraphQL page={currentPage} />
+        <GamesGraphQL />
       </table>
       <Pagination
         location="bottom"
