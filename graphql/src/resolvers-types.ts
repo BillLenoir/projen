@@ -30,10 +30,16 @@ export type Game = {
   yearpublished?: Maybe<Scalars['Int']['output']>;
 };
 
+export type ListSize = {
+  __typename?: 'ListSize';
+  gameCount: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   game?: Maybe<Game>;
   games?: Maybe<Array<Maybe<Game>>>;
+  listSize?: Maybe<ListSize>;
 };
 
 
@@ -47,6 +53,11 @@ export type QueryGamesArgs = {
   filter: Scalars['String']['input'];
   limit: Scalars['Int']['input'];
   sort: Scalars['String']['input'];
+};
+
+
+export type QueryListSizeArgs = {
+  filter: Scalars['String']['input'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -124,6 +135,7 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Game: ResolverTypeWrapper<Game>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  ListSize: ResolverTypeWrapper<ListSize>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
 }>;
@@ -133,6 +145,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   Game: Game;
   Int: Scalars['Int']['output'];
+  ListSize: ListSize;
   Query: {};
   String: Scalars['String']['output'];
 }>;
@@ -151,13 +164,20 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ListSizeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ListSize'] = ResolversParentTypes['ListSize']> = ResolversObject<{
+  gameCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   game?: Resolver<Maybe<ResolversTypes['Game']>, ParentType, ContextType, RequireFields<QueryGameArgs, 'title'>>;
   games?: Resolver<Maybe<Array<Maybe<ResolversTypes['Game']>>>, ParentType, ContextType, RequireFields<QueryGamesArgs, 'cursor' | 'filter' | 'limit' | 'sort'>>;
+  listSize?: Resolver<Maybe<ResolversTypes['ListSize']>, ParentType, ContextType, RequireFields<QueryListSizeArgs, 'filter'>>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   Game?: GameResolvers<ContextType>;
+  ListSize?: ListSizeResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
 }>;
 

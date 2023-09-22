@@ -5,33 +5,47 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 // says I have a relationship with either because I own it, want to buy it,
 // previously owned it, or want to sell or trade it.
 import { games } from './data/collectionData.js';
-
-// The typeDefs file is a call to codegen
 import { typeDefs } from './data/typeDefs.js';
 import { Game, Resolvers } from './resolvers-types.js';
 
+// This checks each game to see if it passes the filter check
+// based on the games relationship to Billy's collection.
+const filterCheck = (filter: string) => {
+  let includedGame: (game: Game) => boolean = () => true;
+  if (filter === 'own') {
+    includedGame = (game: Game) => game.gameown === true;
+  } else if (filter === 'want') {
+    includedGame = (game: Game) => game.gamewanttobuy === true;
+  } else if (filter === 'prevown') {
+    includedGame = (game: Game) => game.gameprevowned === true;
+  } else if (filter === 'trade') {
+    includedGame = (game: Game) => game.gamefortrade === true;
+  }
+  return includedGame;
+};
+
 const resolvers: Resolvers = {
   Query: {
+
+    // This will return the number of games in the filtered list
+    // so that the client can implement the paginate UI.
+    // THIS IS DUPLICATE CODE!
+    listSize(_parent, args: {filter: string}) {
+      // This is list of games filtered by the indicated parameter.
+      let filteredGames = games.filter(filterCheck(args.filter));
+
+      const returnedCount = { gameCount: filteredGames.length };
+      return returnedCount;
+
+    },
+
     // Returns a list of games starting at the CURSOR with a length of LIMIT.
     // Cannot assume the order of games in the list, so will always
     // filter by FILTER and sort by SORT parameters.
     games(_parent, args: { cursor: string; limit: number; sort: string; filter: string }) {
-
-      // The filtering function. This examines one of the 4 booleans that indicate
-      // the relationship I have with the game to determine whether or not it should
-      // be included in the list to be sorted.
-      let filterFunk: (game: Game) => boolean = () => true;
-      if (args.filter === 'own') {
-        filterFunk = (game: Game) => game.gameown === true;
-      } else if (args.filter === 'want') {
-        filterFunk = (game: Game) => game.gamewanttobuy === true;
-      } else if (args.filter === 'prevown') {
-        filterFunk = (game: Game) => game.gameprevowned === true;
-      } else if (args.filter === 'trade') {
-        filterFunk = (game: Game) => game.gamefortrade === true;
-      }
+      console.log(args);
       // This is list of games filtered by the indicated parameter.
-      let filteredGames = games.filter(filterFunk);
+      let filteredGames = games.filter(filterCheck(args.filter));
 
       // The following will sort the filtered list of games by the indicated sort parameter.
       if (args.sort === 'id') { // This sorts the filtered games by ID.
@@ -60,22 +74,17 @@ const resolvers: Resolvers = {
       // Year, definitely, and title, maybe, are not unique identifiers.
       // BUT, the cursor may also be blank, so...
       const cursor = args.cursor === '' ? '' : JSON.parse(args.cursor);
-      console.log(cursor);
 
       // Given the CURSOR, we need the index of that game in the filtered and
       // sorted list as the point from which to start the list of games to return.
       let cursorGame: Game | null = null;
       if (cursor === '') {
         from = 0;
-      } else if (args.sort === 'id') {
+      } else {
         cursorGame = filteredGames.find((game) => game.id === cursor.id) ?? null;
-      } else if (args.sort === 'title') {
-        cursorGame = filteredGames.find((game) => game.id === cursor.id && game.title === cursor.title) ?? null;
-      } else if (args.sort === 'yearpublished') {
-        cursorGame = filteredGames.find((game) => game.id === cursor.id && game.yearpublished === cursor.yearpublished) ?? null;
       }
-      // If the cursor does not point to a valid game in the list,
-      // we start from the beginning.
+
+      // If the cursor does not point to a game in the list, we start from the beginning.
       if (cursorGame === null) {
         from = 0;
       } else {
@@ -92,20 +101,9 @@ const resolvers: Resolvers = {
         returnedGames.push(filteredGames[i]);
       }
 
-      let returnedCursor: string = '';
-
-      if (limit < filteredGames.length) {
-        returnedCursor = `{ 
-          'id': ${filteredGames[limit + 1].id},
-          'title': ${filteredGames[limit + 1].title},
-          'yearpublished': ${filteredGames[limit + 1].yearpublished}
-        }`;
-      }
-
-      const returnedData = { returnedCursor, returnedGames };
-
-      return returnedData;
+      return returnedGames;
     },
+
     // Return just a single game based on it's title. I haven't really worked
     // on this one yet.
     game(_parent, args: { title: string }) {
