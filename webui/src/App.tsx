@@ -29,7 +29,7 @@ const client = new Client({
 export default function App() {
   return (
     <Provider value={client}>
-      <Games cursor="" limit={50} sort="id" filter="own" />
+      <Games cursor="" limit={50} sort="title" filter="want" />
     </Provider>
   );
 }

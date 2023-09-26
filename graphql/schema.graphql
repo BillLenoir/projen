@@ -4,38 +4,32 @@
 
 type Query {
 
-  # Returns the number of games in the filtered list
-  listSize(filter: String!): ListSize
-
   # Return a list of games 
   # sort: How to sort the list of games
   # filter: How to filter the list of games
   # cursor: Where to start to start the returned list
   # limit: The number of games to return in the list
-
-  # findGames(sort: String!, filter: String!, cursor: String!, limit: Int!): [Game]
-  games(sort: String!, filter: String!, cursor: String!, limit: Int!): [Game]
+  findGames(sort: String!, filter: String!, cursor: String!, limit: Int!): GameConnection
 
   # Return a single game specificed by title
   game(title: String!): Game
+
+  # OLD STUFF
+  games(sort: String!, filter: String!, cursor: String!, limit: Int!): [Game]
+  listSize(filter: String!): ListSize
 }
 
-  # type GameConnection {
-  #   name
-  #   friendsConnection(first: 2, after: "Y3Vyc29yMQ==") {
-  #     totalCount
-  #     edges {
-  #       node {
-  #         name
-  #       }
-  #       cursor
-  #     }
-  #     pageInfo {
-  #       endCursor
-  #       hasNextPage
-  #     }
-  #   }
-  # }
+type GameConnection {
+  totalCount: Int!
+  endCursor: String!
+  hasNextPage: Boolean
+  games: [GameNode]
+}
+
+type GameNode {
+  game: Game!
+  cursor: String!
+}
 
 type Game {
   id: Int!

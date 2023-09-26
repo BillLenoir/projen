@@ -30,6 +30,20 @@ export type Game = {
   yearpublished?: Maybe<Scalars['Int']['output']>;
 };
 
+export type GameConnection = {
+  __typename?: 'GameConnection';
+  endCursor: Scalars['String']['output'];
+  games?: Maybe<Array<Maybe<GameNode>>>;
+  hasNextPage?: Maybe<Scalars['Boolean']['output']>;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type GameNode = {
+  __typename?: 'GameNode';
+  cursor: Scalars['String']['output'];
+  game: Game;
+};
+
 export type ListSize = {
   __typename?: 'ListSize';
   gameCount: Scalars['Int']['output'];
@@ -37,9 +51,18 @@ export type ListSize = {
 
 export type Query = {
   __typename?: 'Query';
+  findGames?: Maybe<GameConnection>;
   game?: Maybe<Game>;
   games?: Maybe<Array<Maybe<Game>>>;
   listSize?: Maybe<ListSize>;
+};
+
+
+export type QueryFindGamesArgs = {
+  cursor: Scalars['String']['input'];
+  filter: Scalars['String']['input'];
+  limit: Scalars['Int']['input'];
+  sort: Scalars['String']['input'];
 };
 
 
@@ -134,6 +157,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Game: ResolverTypeWrapper<Game>;
+  GameConnection: ResolverTypeWrapper<GameConnection>;
+  GameNode: ResolverTypeWrapper<GameNode>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   ListSize: ResolverTypeWrapper<ListSize>;
   Query: ResolverTypeWrapper<{}>;
@@ -144,6 +169,8 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   Game: Game;
+  GameConnection: GameConnection;
+  GameNode: GameNode;
   Int: Scalars['Int']['output'];
   ListSize: ListSize;
   Query: {};
@@ -164,12 +191,27 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type GameConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameConnection'] = ResolversParentTypes['GameConnection']> = ResolversObject<{
+  endCursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  games?: Resolver<Maybe<Array<Maybe<ResolversTypes['GameNode']>>>, ParentType, ContextType>;
+  hasNextPage?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type GameNodeResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameNode'] = ResolversParentTypes['GameNode']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  game?: Resolver<ResolversTypes['Game'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ListSizeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ListSize'] = ResolversParentTypes['ListSize']> = ResolversObject<{
   gameCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  findGames?: Resolver<Maybe<ResolversTypes['GameConnection']>, ParentType, ContextType, RequireFields<QueryFindGamesArgs, 'cursor' | 'filter' | 'limit' | 'sort'>>;
   game?: Resolver<Maybe<ResolversTypes['Game']>, ParentType, ContextType, RequireFields<QueryGameArgs, 'title'>>;
   games?: Resolver<Maybe<Array<Maybe<ResolversTypes['Game']>>>, ParentType, ContextType, RequireFields<QueryGamesArgs, 'cursor' | 'filter' | 'limit' | 'sort'>>;
   listSize?: Resolver<Maybe<ResolversTypes['ListSize']>, ParentType, ContextType, RequireFields<QueryListSizeArgs, 'filter'>>;
@@ -177,6 +219,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   Game?: GameResolvers<ContextType>;
+  GameConnection?: GameConnectionResolvers<ContextType>;
+  GameNode?: GameNodeResolvers<ContextType>;
   ListSize?: ListSizeResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
 }>;
