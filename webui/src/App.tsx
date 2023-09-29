@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Client,
   Provider,
@@ -12,53 +12,73 @@ import {
 // import GameItem from "./components/gameItem";
 import ListHeader from "./components/listHeader";
 import Pagination from "./components/pagination";
-import { games } from "./data/gameData";
+
+enum Filter {
+  OWN = "OWN",
+  WANT = "WANT",
+  PREVOWN = "PREVOWN",
+  TRADE = "TRADE",
+}
+
+enum Sort {
+  ID = "ID",
+  TITLE = "TITLE",
+  YEARPUBLISHED = "YEARPUBLISHED",
+}
 
 interface GamesProps {
   cursor: string;
   limit: number;
-  sort: string;
-  filter: string;
+  sort: Sort;
+  filter: Filter;
 }
+
+let firstDisabled = true;
+let prevDisabled = true;
+let nextDisabled = false;
+let lastDisabled = false;
+let maxPage: number = 0;
+let sort: Sort = Sort.ID;
+let filter: Filter = Filter.OWN;
+let cursor: string = "";
+let limit: number = 50;
 
 const client = new Client({
   url: "http://localhost:4000/",
   exchanges: [cacheExchange, fetchExchange],
 });
 
-export default function App() {
-  return (
-    <Provider value={client}>
-      <Games cursor="" limit={50} sort="title" filter="want" />
-    </Provider>
-  );
-}
-
-const Games = (props: GamesProps) => {
-  const cursor = props.cursor;
-  const limit = props.limit;
-  const sort = props.sort;
-  const filter = props.filter;
-  const [currentPage, setCurrentPage] = useState(1);
-  const maxPage = Math.ceil(games.length / 50);
-
-  const GamesQuery = gql`
-    query ($cursor: String!, $limit: Int!, $sort: String!, $filter: String!) {
-      games(cursor: $cursor, limit: $limit, sort: $sort, filter: $filter) {
-        description
-        id
-        publisher
-        thumbnail
-        title
-        yearpublished
-        gameown
-        gameprevowned
-        gamewanttobuy
-        gamefortrade
+const GamesQuery = gql`
+  query FindGames(
+    $sort: Sort!
+    $filter: Filter!
+    $cursor: String!
+    $limit: Int!
+  ) {
+    findGames(sort: $sort, filter: $filter, cursor: $cursor, limit: $limit) {
+      totalCount
+      hasNextPage
+      endCursor
+      games {
+        cursor
+        game {
+          description
+          gamefortrade
+          gameown
+          gameprevowned
+          gamewanttobuy
+          id
+          publisher
+          thumbnail
+          title
+          yearpublished
+        }
       }
     }
-  `;
+  }
+`;
 
+const sendGamesQuery = () => {
   const [result, _reexecuteQuery] = useQuery({
     query: GamesQuery,
     variables: { cursor, limit, sort, filter },
@@ -66,54 +86,67 @@ const Games = (props: GamesProps) => {
 
   const { data, fetching, error } = result;
 
-  if (fetching) return <p>Loading...</p>;
-  if (error) return <p>Oh no... {error.message} </p>;
+  if (fetching)
+    return (
+      <tr>
+        <td>Loading...</td>
+      </tr>
+    );
+  if (error)
+    return (
+      <tr>
+        <td>Oh no... {error.message}</td>
+      </tr>
+    );
 
-  let tableRow = [];
-
+  maxPage = Math.ceil(data.findGames.totalCount / limit);
+  cursor = data.findGames.endCursor;
+  let gamesToDisplay = [];
   const bggBaseURL = "https://boardgamegeek.com/boardgame/";
 
-  for (let i = 0; i < data.games.length; i++) {
+  for (let i = 0; i < data.findGames.games.length; i++) {
     let gameImage;
-    if (data.games[i].thumbnail !== null) {
+    if (data.findGames.games[i].game.thumbnail !== null) {
       gameImage = (
         <td>
           <img
-            src={data.games[i].thumbnail}
-            alt={"Cover image for" + data.games[i].title}
+            src={data.findGames.games[i].game.thumbnail}
+            alt={"Cover image for" + data.findGames.games[i].game.title}
           />
         </td>
       );
     } else {
       gameImage = <td className="noImage">No image for this game</td>;
     }
-    const gamePublisher = data.games[i].publisher.split("xxxxx").join(", ");
-    const gameDescription = data.games[i].description
-      ? data.games[i].description
+    const gamePublisher = data.findGames.games[i].game.publisher
+      .split("xxxxx")
+      .join(", ");
+    const gameDescription = data.findGames.games[i].game.description
+      ? data.findGames.games[i].game.description
       : "";
-    const gameURL = bggBaseURL + data.games[i].id;
-    const gameTitle = data.games[i].title;
-    const gameYearPublished = data.games[i].yearpublished
-      ? data.games[i].yearpublished
+    const gameURL = bggBaseURL + data.findGames.games[i].game.id;
+    const gameTitle = data.findGames.games[i].game.title;
+    const gameYearPublished = data.findGames.games[i].game.yearpublished
+      ? data.findGames.games[i].game.yearpublished
       : "";
 
     let gameStatusArray: string[] = [];
-    if (data.games[i].gameown === true) {
+    if (data.findGames.games[i].game.gameown === true) {
       gameStatusArray.push("OWN");
     }
-    if (data.games[i].gamewanttobuy === true) {
+    if (data.findGames.games[i].game.gamewanttobuy === true) {
       gameStatusArray.push("WANT");
     }
-    if (data.games[i].gameprevowned === true) {
+    if (data.findGames.games[i].game.gameprevowned === true) {
       gameStatusArray.push("SOLD");
     }
-    if (data.games[i].gamefortrade === true) {
+    if (data.findGames.games[i].game.gamefortrade === true) {
       gameStatusArray.push("FOR SALE");
     }
     const gameStatus = gameStatusArray.join(", ");
 
-    tableRow.push(
-      <tr key={data.games[i].id}>
+    gamesToDisplay.push(
+      <tr key={data.findGames.games[i].game.id}>
         {gameImage}
         <td>
           <h3>
@@ -128,6 +161,53 @@ const Games = (props: GamesProps) => {
       </tr>,
     );
   }
+  return gamesToDisplay;
+};
+
+export default function App() {
+  return (
+    <Provider value={client}>
+      <Games cursor="" limit={10} sort={Sort.ID} filter={Filter.OWN} />
+    </Provider>
+  );
+}
+
+const Games = (props: GamesProps) => {
+  sort = props.sort;
+  filter = props.filter;
+  cursor = props.cursor;
+  limit = props.limit;
+  let tableRows = sendGamesQuery();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    if (currentPage === 1) {
+      firstDisabled = true;
+      prevDisabled = true;
+      nextDisabled = false;
+      lastDisabled = false;
+    } else if (currentPage === 2) {
+      firstDisabled = true;
+      prevDisabled = false;
+      nextDisabled = false;
+      lastDisabled = false;
+    } else if (currentPage === maxPage - 1) {
+      firstDisabled = false;
+      prevDisabled = false;
+      nextDisabled = false;
+      lastDisabled = true;
+    } else if (currentPage === maxPage) {
+      firstDisabled = false;
+      prevDisabled = false;
+      nextDisabled = true;
+      lastDisabled = true;
+    } else {
+      firstDisabled = false;
+      prevDisabled = false;
+      nextDisabled = false;
+      lastDisabled = false;
+    }
+  }, [currentPage]);
 
   function handlePageButtonClick(whichPage: string): void {
     switch (whichPage) {
@@ -155,15 +235,23 @@ const Games = (props: GamesProps) => {
         <Pagination
           location="top"
           pageButtonClick={handlePageButtonClick}
+          firstDisabled={firstDisabled}
+          prevDisabled={prevDisabled}
+          nextDisabled={nextDisabled}
+          lastDisabled={lastDisabled}
           currentPage={currentPage}
           maxPage={maxPage}
         />
         <table cellSpacing="0" cellPadding="0" id="gameDataTable">
-          <tbody>{tableRow}</tbody>
+          <tbody>{tableRows}</tbody>
         </table>
         <Pagination
           location="bottom"
           pageButtonClick={handlePageButtonClick}
+          firstDisabled={firstDisabled}
+          prevDisabled={prevDisabled}
+          nextDisabled={nextDisabled}
+          lastDisabled={lastDisabled}
           currentPage={currentPage}
           maxPage={maxPage}
         />

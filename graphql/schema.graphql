@@ -9,14 +9,27 @@ type Query {
   # filter: How to filter the list of games
   # cursor: Where to start to start the returned list
   # limit: The number of games to return in the list
-  findGames(sort: String!, filter: String!, cursor: String!, limit: Int!): GameConnection
+  findGames(sort: Sort!, filter: Filter!, cursor: String!, limit: Int!): GameConnection
 
   # Return a single game specificed by title
   game(title: String!): Game
 
   # OLD STUFF
-  games(sort: String!, filter: String!, cursor: String!, limit: Int!): [Game]
+  games(sort: Sort!, filter: Filter!, cursor: String!, limit: Int!): [Game]
   listSize(filter: String!): ListSize
+}
+
+enum Filter {
+  OWN
+  WANT
+  PREVOWN
+  TRADE
+}
+
+enum Sort {
+  ID
+  TITLE
+  YEARPUBLISHED
 }
 
 type GameConnection {

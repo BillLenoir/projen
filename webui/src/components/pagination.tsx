@@ -3,6 +3,10 @@ import PageButtons from "./pageButtons";
 interface PaginationProps {
   location: string | undefined;
   pageButtonClick: (whichPage: string) => void;
+  firstDisabled: boolean;
+  prevDisabled: boolean;
+  nextDisabled: boolean;
+  lastDisabled: boolean;
   currentPage: number;
   maxPage: number;
 }

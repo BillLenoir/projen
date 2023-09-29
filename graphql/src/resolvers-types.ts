@@ -16,6 +16,13 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export enum Filter {
+  Own = 'OWN',
+  Prevown = 'PREVOWN',
+  Trade = 'TRADE',
+  Want = 'WANT'
+}
+
 export type Game = {
   __typename?: 'Game';
   description?: Maybe<Scalars['String']['output']>;
@@ -60,9 +67,9 @@ export type Query = {
 
 export type QueryFindGamesArgs = {
   cursor: Scalars['String']['input'];
-  filter: Scalars['String']['input'];
+  filter: Filter;
   limit: Scalars['Int']['input'];
-  sort: Scalars['String']['input'];
+  sort: Sort;
 };
 
 
@@ -73,15 +80,21 @@ export type QueryGameArgs = {
 
 export type QueryGamesArgs = {
   cursor: Scalars['String']['input'];
-  filter: Scalars['String']['input'];
+  filter: Filter;
   limit: Scalars['Int']['input'];
-  sort: Scalars['String']['input'];
+  sort: Sort;
 };
 
 
 export type QueryListSizeArgs = {
   filter: Scalars['String']['input'];
 };
+
+export enum Sort {
+  Id = 'ID',
+  Title = 'TITLE',
+  Yearpublished = 'YEARPUBLISHED'
+}
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
@@ -156,12 +169,14 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Filter: Filter;
   Game: ResolverTypeWrapper<Game>;
   GameConnection: ResolverTypeWrapper<GameConnection>;
   GameNode: ResolverTypeWrapper<GameNode>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   ListSize: ResolverTypeWrapper<ListSize>;
   Query: ResolverTypeWrapper<{}>;
+  Sort: Sort;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
 }>;
 
