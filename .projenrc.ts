@@ -63,6 +63,7 @@ const graphqlProject = new typescript.TypeScriptAppProject({
     "@graphql-codegen/cli",
     "@graphql-codegen/typescript-resolvers",
     "@graphql-codegen/typescript",
+    "jest",
   ] /* Build dependencies for this module. */,
   // packageName: undefined,  /* The "name" in package.json. */
 });

@@ -3,7 +3,7 @@ import { Filter, Game, Resolvers, Sort } from './resolvers-types.js';
 
 // This checks each game to see if it passes the filter check
 // based on the games relationship to Billy's collection.
-const filterCheck = (filter: string) => {
+export const filterCheck = (filter: string) => {
   let includedGame: (game: Game) => boolean = () => true;
   if (filter === Filter.Own) {
     includedGame = (game: Game) => game.gameown === true;
