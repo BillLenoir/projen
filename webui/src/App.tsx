@@ -1,5 +1,6 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   Client,
   Provider,
@@ -28,19 +29,15 @@ enum Sort {
 
 interface GamesProps {
   cursor: string;
-  limit: number;
-  sort: Sort;
-  filter: Filter;
 }
 
-let firstDisabled = true;
-let prevDisabled = true;
-let nextDisabled = false;
-let lastDisabled = false;
-let maxPage: number = 0;
-let sort: Sort = Sort.ID;
-let filter: Filter = Filter.OWN;
-let cursor: string = "";
+let totalCount: number;
+let from: number = 1;
+let to: number = 50;
+let firstCursor: string | null = null;
+let prevCursor: string | null = null;
+let nextCursor: string | null = null;
+let lastCursor: string | null = null;
 let limit: number = 50;
 
 const client = new Client({
@@ -49,16 +46,14 @@ const client = new Client({
 });
 
 const GamesQuery = gql`
-  query FindGames(
-    $sort: Sort!
-    $filter: Filter!
-    $cursor: String!
-    $limit: Int!
-  ) {
-    findGames(sort: $sort, filter: $filter, cursor: $cursor, limit: $limit) {
+  query FindGames($cursor: String!) {
+    findGames(cursor: $cursor) {
       totalCount
-      hasNextPage
-      endCursor
+      gameNumber
+      firstCursor
+      prevCursor
+      nextCursor
+      lastCursor
       games {
         cursor
         game {
@@ -78,10 +73,10 @@ const GamesQuery = gql`
   }
 `;
 
-const sendGamesQuery = () => {
+const sendGamesQuery = (cursor: string) => {
   const [result, _reexecuteQuery] = useQuery({
     query: GamesQuery,
-    variables: { cursor, limit, sort, filter },
+    variables: { cursor },
   });
 
   const { data, fetching, error } = result;
@@ -99,11 +94,20 @@ const sendGamesQuery = () => {
       </tr>
     );
 
-  maxPage = Math.ceil(data.findGames.totalCount / limit);
-  cursor = data.findGames.endCursor;
+  totalCount = data.findGames.totalCount;
+  from = data.findGames.gameNumber + 1;
+  to =
+    from + limit - 1 <= totalCount
+      ? data.findGames.gameNumber + limit
+      : totalCount;
+  firstCursor = data.findGames.firstCursor;
+  prevCursor = data.findGames.prevCursor;
+  nextCursor = data.findGames.nextCursor;
+  lastCursor = data.findGames.lastCursor;
+
   let gamesToDisplay = [];
   const bggBaseURL = "https://boardgamegeek.com/boardgame/";
-
+  console.log(data.findGames.games.length);
   for (let i = 0; i < data.findGames.games.length; i++) {
     let gameImage;
     if (data.findGames.games[i].game.thumbnail !== null) {
@@ -164,69 +168,44 @@ const sendGamesQuery = () => {
   return gamesToDisplay;
 };
 
+const getEncodedCursor = (
+  cursorId: number | null,
+  cursorLimit: number,
+  cursorSort: string,
+  cursorFilter: string,
+) => {
+  let rawCursor = "{ ";
+  if (cursorId !== null) {
+    rawCursor += `"i": ${cursorId}, `;
+  }
+  rawCursor += `"l": ${cursorLimit}, "s": "${cursorSort}", "f": "${cursorFilter}" } `;
+  const encodedCursor = btoa(rawCursor);
+  return encodedCursor;
+};
+
 export default function App() {
+  const cursor = getEncodedCursor(null, limit, Sort.ID, Filter.OWN);
   return (
-    <Provider value={client}>
-      <Games cursor="" limit={10} sort={Sort.ID} filter={Filter.OWN} />
-    </Provider>
+    <BrowserRouter>
+      <Provider value={client}>
+        <Routes>
+          <Route path="/" element={<Games cursor={cursor} />} />
+        </Routes>
+        <Routes>
+          <Route path="/:cursor" element={<Games cursor={cursor} />} />
+        </Routes>
+      </Provider>
+    </BrowserRouter>
   );
 }
 
 const Games = (props: GamesProps) => {
-  sort = props.sort;
-  filter = props.filter;
-  cursor = props.cursor;
-  limit = props.limit;
-  let tableRows = sendGamesQuery();
-
-  const [currentPage, setCurrentPage] = useState(1);
-  useEffect(() => {
-    if (currentPage === 1) {
-      firstDisabled = true;
-      prevDisabled = true;
-      nextDisabled = false;
-      lastDisabled = false;
-    } else if (currentPage === 2) {
-      firstDisabled = true;
-      prevDisabled = false;
-      nextDisabled = false;
-      lastDisabled = false;
-    } else if (currentPage === maxPage - 1) {
-      firstDisabled = false;
-      prevDisabled = false;
-      nextDisabled = false;
-      lastDisabled = true;
-    } else if (currentPage === maxPage) {
-      firstDisabled = false;
-      prevDisabled = false;
-      nextDisabled = true;
-      lastDisabled = true;
-    } else {
-      firstDisabled = false;
-      prevDisabled = false;
-      nextDisabled = false;
-      lastDisabled = false;
-    }
-  }, [currentPage]);
-
-  function handlePageButtonClick(whichPage: string): void {
-    switch (whichPage) {
-      case "First":
-        setCurrentPage(1);
-        break;
-      case "Prev":
-        setCurrentPage(currentPage - 1);
-        break;
-      case "Next":
-        setCurrentPage(currentPage + 1);
-        break;
-      case "Last":
-        setCurrentPage(maxPage);
-        break;
-      default:
-        throw new Error("Which Page was not properly set.");
-    }
+  let cursor = props.cursor;
+  const [current, setCurrent] = useState(cursor);
+  function handlePageButtonClick(newCursor: string): void {
+    setCurrent(newCursor);
   }
+  let tableRows = sendGamesQuery(current);
 
   return (
     <Provider value={client}>
@@ -234,26 +213,28 @@ const Games = (props: GamesProps) => {
         <ListHeader text="Sorted alphabetically by title" />
         <Pagination
           location="top"
-          pageButtonClick={handlePageButtonClick}
-          firstDisabled={firstDisabled}
-          prevDisabled={prevDisabled}
-          nextDisabled={nextDisabled}
-          lastDisabled={lastDisabled}
-          currentPage={currentPage}
-          maxPage={maxPage}
+          handlePageButtonClick={handlePageButtonClick}
+          first={firstCursor}
+          prev={prevCursor}
+          next={nextCursor}
+          last={lastCursor}
+          totalCount={totalCount}
+          from={from}
+          to={to}
         />
         <table cellSpacing="0" cellPadding="0" id="gameDataTable">
           <tbody>{tableRows}</tbody>
         </table>
         <Pagination
           location="bottom"
-          pageButtonClick={handlePageButtonClick}
-          firstDisabled={firstDisabled}
-          prevDisabled={prevDisabled}
-          nextDisabled={nextDisabled}
-          lastDisabled={lastDisabled}
-          currentPage={currentPage}
-          maxPage={maxPage}
+          handlePageButtonClick={handlePageButtonClick}
+          first={firstCursor}
+          prev={prevCursor}
+          next={nextCursor}
+          last={lastCursor}
+          totalCount={totalCount}
+          from={from}
+          to={to}
         />
       </div>
     </Provider>

@@ -9,14 +9,11 @@ type Query {
   # filter: How to filter the list of games
   # cursor: Where to start to start the returned list
   # limit: The number of games to return in the list
-  findGames(sort: Sort!, filter: Filter!, cursor: String!, limit: Int!): GameConnection
+  findGames(cursor: String!): GameConnection
 
   # Return a single game specificed by title
   game(title: String!): Game
 
-  # OLD STUFF
-  games(sort: Sort!, filter: Filter!, cursor: String!, limit: Int!): [Game]
-  listSize(filter: String!): ListSize
 }
 
 enum Filter {
@@ -34,8 +31,11 @@ enum Sort {
 
 type GameConnection {
   totalCount: Int!
-  endCursor: String!
-  hasNextPage: Boolean
+  gameNumber: Int!
+  firstCursor: String
+  prevCursor: String
+  nextCursor: String
+  lastCursor: String
   games: [GameNode]
 }
 

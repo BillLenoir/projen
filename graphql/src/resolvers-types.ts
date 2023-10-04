@@ -39,9 +39,12 @@ export type Game = {
 
 export type GameConnection = {
   __typename?: 'GameConnection';
-  endCursor: Scalars['String']['output'];
+  firstCursor?: Maybe<Scalars['String']['output']>;
+  gameNumber: Scalars['Int']['output'];
   games?: Maybe<Array<Maybe<GameNode>>>;
-  hasNextPage?: Maybe<Scalars['Boolean']['output']>;
+  lastCursor?: Maybe<Scalars['String']['output']>;
+  nextCursor?: Maybe<Scalars['String']['output']>;
+  prevCursor?: Maybe<Scalars['String']['output']>;
   totalCount: Scalars['Int']['output'];
 };
 
@@ -60,34 +63,16 @@ export type Query = {
   __typename?: 'Query';
   findGames?: Maybe<GameConnection>;
   game?: Maybe<Game>;
-  games?: Maybe<Array<Maybe<Game>>>;
-  listSize?: Maybe<ListSize>;
 };
 
 
 export type QueryFindGamesArgs = {
   cursor: Scalars['String']['input'];
-  filter: Filter;
-  limit: Scalars['Int']['input'];
-  sort: Sort;
 };
 
 
 export type QueryGameArgs = {
   title: Scalars['String']['input'];
-};
-
-
-export type QueryGamesArgs = {
-  cursor: Scalars['String']['input'];
-  filter: Filter;
-  limit: Scalars['Int']['input'];
-  sort: Sort;
-};
-
-
-export type QueryListSizeArgs = {
-  filter: Scalars['String']['input'];
 };
 
 export enum Sort {
@@ -207,9 +192,12 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
 }>;
 
 export type GameConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameConnection'] = ResolversParentTypes['GameConnection']> = ResolversObject<{
-  endCursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  firstCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  gameNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   games?: Resolver<Maybe<Array<Maybe<ResolversTypes['GameNode']>>>, ParentType, ContextType>;
-  hasNextPage?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  lastCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  nextCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  prevCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -226,10 +214,8 @@ export type ListSizeResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  findGames?: Resolver<Maybe<ResolversTypes['GameConnection']>, ParentType, ContextType, RequireFields<QueryFindGamesArgs, 'cursor' | 'filter' | 'limit' | 'sort'>>;
+  findGames?: Resolver<Maybe<ResolversTypes['GameConnection']>, ParentType, ContextType, RequireFields<QueryFindGamesArgs, 'cursor'>>;
   game?: Resolver<Maybe<ResolversTypes['Game']>, ParentType, ContextType, RequireFields<QueryGameArgs, 'title'>>;
-  games?: Resolver<Maybe<Array<Maybe<ResolversTypes['Game']>>>, ParentType, ContextType, RequireFields<QueryGamesArgs, 'cursor' | 'filter' | 'limit' | 'sort'>>;
-  listSize?: Resolver<Maybe<ResolversTypes['ListSize']>, ParentType, ContextType, RequireFields<QueryListSizeArgs, 'filter'>>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{

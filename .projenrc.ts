@@ -28,7 +28,7 @@ new web.ReactTypeScriptProject({
   prettier: true,
 
   // deps: [],                /* Runtime dependencies of this module. */
-  deps: ["urql", "graphql"],
+  deps: ["urql", "graphql", "react-router-dom"],
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   devDeps: [
     "@babel/plugin-proposal-private-property-in-object",

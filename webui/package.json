@@ -41,6 +41,7 @@
     "graphql": "^16.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.16.0",
     "react-scripts": "^5",
     "urql": "^4.0.5",
     "web-vitals": "^3.4.0"
