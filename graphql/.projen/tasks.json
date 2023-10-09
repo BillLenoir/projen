@@ -116,13 +116,13 @@
           "exec": "yarn upgrade npm-check-updates"
         },
         {
-          "exec": "npm-check-updates --upgrade --target=minor --filter=@graphql-codegen/cli,@graphql-codegen/typescript,@graphql-codegen/typescript-resolvers,@types/jest,@types/node,@typescript-eslint/eslint-plugin,@typescript-eslint/parser,eslint-import-resolver-node,eslint-import-resolver-typescript,eslint-plugin-import,eslint,jest,jest-junit,npm-check-updates,projen,ts-jest,typescript,@apollo/server,graphql"
+          "exec": "npm-check-updates --upgrade --target=minor --filter=@graphql-codegen/cli,@graphql-codegen/typescript,@graphql-codegen/typescript-resolvers,@types/jest,@types/node,@typescript-eslint/eslint-plugin,@typescript-eslint/parser,eslint-import-resolver-node,eslint-import-resolver-typescript,eslint-plugin-import,eslint,jest,jest-junit,npm-check-updates,projen,ts-jest,typescript,@apollo/server,@jest/globals,graphql"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-resolvers @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit npm-check-updates projen ts-jest typescript @apollo/server graphql"
+          "exec": "yarn upgrade @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-resolvers @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit npm-check-updates projen ts-jest typescript @apollo/server @jest/globals graphql"
         },
         {
           "exec": "npx projen"

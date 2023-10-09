@@ -56,7 +56,7 @@ const graphqlProject = new typescript.TypeScriptAppProject({
   },
 
   // deps: [],                /* Runtime dependencies of this module. */
-  deps: ["@apollo/server", "graphql"],
+  deps: ["@apollo/server", "graphql", "@jest/globals"],
 
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   devDeps: [
@@ -66,6 +66,16 @@ const graphqlProject = new typescript.TypeScriptAppProject({
     "jest",
   ] /* Build dependencies for this module. */,
   // packageName: undefined,  /* The "name" in package.json. */
+
+  jestOptions: {
+    jestConfig: {
+      extensionsToTreatAsEsm: [".ts"],
+      moduleNameMapper: {
+        "^(\\.{1,2}/.*)\\.js$": "$1",
+      },
+      preset: "ts-jest/presets/default-esm",
+    },
+  },
 });
 
 const packageJson = graphqlProject.tryFindObjectFile("package.json");

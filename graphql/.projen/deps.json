@@ -79,6 +79,10 @@
       "type": "runtime"
     },
     {
+      "name": "@jest/globals",
+      "type": "runtime"
+    },
+    {
       "name": "graphql",
       "type": "runtime"
     }

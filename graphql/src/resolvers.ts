@@ -103,27 +103,21 @@ export const resolvers: Resolvers = {
       if (from >= (limit * 2)) {
         firstCursor = getEncodedCursor(null, input.l, input.s, input.f);
       }
-      console.log('first');
 
       // The previous "page"
       if (from >= limit) {
         prevCursor = getEncodedCursor(filteredGames[from - limit].id, input.l, input.s, input.f);
       }
-      console.log('pref');
 
       // The next "page"
       if (from <= filteredGames.length - limit - 1) {
         nextCursor = getEncodedCursor(filteredGames[from + limit].id, input.l, input.s, input.f);
       }
-      console.log('next');
 
       // The last "page"
       if (from <= filteredGames.length - (limit * 2) - 1) {
         lastCursor = getEncodedCursor(filteredGames[filteredGames.length - limit].id, input.l, input.s, input.f);
       }
-      console.log('last');
-
-      console.log(`Index: ${lastCursor}`);
 
       // Assemble data for each returned game
       const gameNodes = [];
