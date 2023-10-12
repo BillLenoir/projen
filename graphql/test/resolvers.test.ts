@@ -1,9 +1,9 @@
 import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import { describe, expect, test } from '@jest/globals';
+// import { describe, expect, test } from '@jest/globals';
+import { expect, test } from '@jest/globals';
 import { typeDefs } from '../src/data/typeDefs';
-import { filterCheck, resolvers } from '../src/resolvers';
-import { Filter, Sort } from '../src/resolvers-types';
+import { resolvers } from '../src/resolvers';
+// import { Filter, Sort } from '../src/resolvers-types';
 
 
 const testServer = new ApolloServer({
@@ -40,14 +40,15 @@ const testQuery = `query FindGames($cursor: String!) {
 
 const cursor = 'eyAiaSI6IDE5NTM1MywgImwiOiA1MCwgInMiOiAiSUQiLCAiZiI6ICJPV04iIH0g';
 
-const testResponse = await testServer.executeOperation({
-  query: testQuery,
-  variables: { cursor: cursor },
+test('return something', async () => {
+  const testResponse = await testServer.executeOperation({
+    query: testQuery,
+    variables: { cursor: cursor },
+  });
+  console.log(testResponse);
+  expect(testResponse.body).not.toBeUndefined();
 });
 
-test('two plus two is four', () => {
-  expect(2 + 2).toBe(4);
-});
 
 // const gameOwn = {
 //   id: 6022,
@@ -119,11 +120,6 @@ test('two plus two is four', () => {
 //   .filter((value) => isNaN(Number(value)));
 // console.log(filterKeys.length);
 
-// sendGamesQuery('eyAiaSI6IDE5NTM1MywgImwiOiA1MCwgInMiOiAiSUQiLCAiZiI6ICJPV04iIH0g');
-
-// test('Filters game list to return only those games I own', () => {
-
-// });
 // for (let i = 0; i < sortKeys.length; i++) {
 //   for (let j = 0; j < filterKeys.length; j++) {
 //     console.log(`Sort: ${sortKeys[i]} => Filter: ${filterKeys[j]}`);

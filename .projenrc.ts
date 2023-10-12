@@ -78,6 +78,8 @@ const graphqlProject = new typescript.TypeScriptAppProject({
   },
 });
 
+graphqlProject.tsconfigDev.addInclude("*.ts");
+
 const packageJson = graphqlProject.tryFindObjectFile("package.json");
 
 // Use dot notation to address inside the object

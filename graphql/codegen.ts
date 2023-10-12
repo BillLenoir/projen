@@ -1,7 +1,7 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
- 
+
 const config: CodegenConfig = {
-  schema: 'schema.graphql',
+  schema: './src/schema.graphql',
   generates: {
     './src/resolvers-types.ts': {
       config: {
@@ -9,6 +9,9 @@ const config: CodegenConfig = {
       },
       plugins: ['typescript', 'typescript-resolvers'],
     },
+  },
+  hooks: {
+    afterAllFileWrite: ['prettier --write', 'eslint --fix --no-error-on-unmatched-pattern'],
   },
 };
 export default config;
